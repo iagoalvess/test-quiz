@@ -115,3 +115,26 @@ def test_correct_selected_choices_exceeds_max():
     question.add_choice('b', False)
     with pytest.raises(Exception):
         question.correct_selected_choices([1, 2])
+
+
+@pytest.fixture
+def question_with_choices():
+    question = Question(title='Capital do Brasil?', points=5, max_selections=1)
+    question.add_choice('São Paulo', False)
+    question.add_choice('Brasília', True)
+    question.add_choice('Rio de Janeiro', False)
+    return question
+
+def test_fixture_correct_answer(question_with_choices):
+    result = question_with_choices.correct_selected_choices([2])
+    assert result == [2]
+
+def test_fixture_wrong_answer(question_with_choices):
+    result = question_with_choices.correct_selected_choices([1])
+    assert result == []
+
+def test_fixture_remove_and_check(question_with_choices):
+    question_with_choices.remove_choice_by_id(3)
+    assert len(question_with_choices.choices) == 2
+    assert question_with_choices.choices[0].text == 'São Paulo'
+    assert question_with_choices.choices[1].text == 'Brasília'
